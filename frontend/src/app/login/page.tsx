@@ -2,15 +2,21 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // 1. Importamos useRouter
 import styles from './login.module.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter(); // 2. Inicializamos el router
+
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Login con:', { email, password });
+
+    // 3. Redirigimos a la ruta /menu
+    router.push('/menu-principal'); 
   };
 
   return (
