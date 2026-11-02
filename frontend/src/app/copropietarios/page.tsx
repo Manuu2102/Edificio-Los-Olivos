@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import AppShell from '../_components/app-shell/AppShell';
 import styles from './copropietarios.module.css';
 
 type IconName = 'users' | 'plus' | 'search' | 'back' | 'close' | 'check';
@@ -46,27 +46,26 @@ type Copropietario = {
   correo: string;
   telefono: string;
   departamento: string;
-  participacion: string;
   fecha: string;
   estado: 'Activo' | 'Inactivo';
 };
 
 type FormState = {
   nombre: string;
+  apellido: string;
   ci: string;
   correo: string;
   telefono: string;
   departamento: string;
-  participacion: string;
 };
 
 const EMPTY_FORM: FormState = {
   nombre: '',
+  apellido: '',
   ci: '',
   correo: '',
   telefono: '',
   departamento: '',
-  participacion: '',
 };
 
 // Datos de ejemplo. Reemplázalos por los datos de tu API cuando la tengas.
@@ -78,7 +77,6 @@ const SEED: Copropietario[] = [
     correo: 'carlos.mendoza@mail.com',
     telefono: '+591 711 22334',
     departamento: 'Depto. 101',
-    participacion: '4.5',
     fecha: '12/03/2025',
     estado: 'Activo',
   },
@@ -89,7 +87,6 @@ const SEED: Copropietario[] = [
     correo: 'mfsoliz@mail.com',
     telefono: '+591 722 45678',
     departamento: 'Depto. 204',
-    participacion: '5.2',
     fecha: '28/07/2025',
     estado: 'Activo',
   },
@@ -100,7 +97,6 @@ const SEED: Copropietario[] = [
     correo: 'javier.arce@mail.com',
     telefono: '+591 733 98765',
     departamento: 'Depto. 305',
-    participacion: '3.8',
     fecha: '15/01/2026',
     estado: 'Inactivo',
   },
@@ -123,19 +119,14 @@ function todayLabel() {
 
 function validate(form: FormState) {
   const errors: Partial<Record<keyof FormState, string>> = {};
-  if (!form.nombre.trim()) errors.nombre = 'Ingresa el nombre completo.';
+  if (!form.nombre.trim()) errors.nombre = 'Ingresa el nombre.';
+  if (!form.apellido.trim()) errors.apellido = 'Ingresa el apellido.';
   if (!form.ci.trim()) errors.ci = 'Ingresa la cédula de identidad.';
   if (!form.departamento.trim()) errors.departamento = 'Ingresa el departamento.';
   if (!form.correo.trim()) {
     errors.correo = 'Ingresa el correo electrónico.';
   } else if (!/^\S+@\S+\.\S+$/.test(form.correo.trim())) {
     errors.correo = 'El correo no tiene un formato válido.';
-  }
-  if (form.participacion.trim()) {
-    const n = Number(form.participacion);
-    if (Number.isNaN(n) || n < 0 || n > 100) {
-      errors.participacion = 'Ingresa un porcentaje entre 0 y 100.';
-    }
   }
   return errors;
 }
@@ -187,14 +178,15 @@ export default function CopropietariosPage() {
       return;
     }
 
+    const nombreCompleto = `${form.nombre.trim()} ${form.apellido.trim()}`;
+
     const nuevo: Copropietario = {
       id: Date.now(),
-      nombre: form.nombre.trim(),
+      nombre: nombreCompleto,
       ci: form.ci.trim(),
       correo: form.correo.trim(),
       telefono: form.telefono.trim() || '—',
       departamento: form.departamento.trim(),
-      participacion: form.participacion.trim(),
       fecha: todayLabel(),
       estado: 'Activo',
     };
@@ -206,24 +198,24 @@ export default function CopropietariosPage() {
     setErrors({});
   };
 
+  const registerButton = (
+    <button type="button" className={styles.primaryBtn} onClick={openForm}>
+      <Icon name="plus" />
+      Registrar copropietario
+    </button>
+  );
+
   return (
-    <div className={styles.page}>
+    <AppShell>
       <div className={styles.container}>
-        <header className={styles.header}>
-          <Link href="/menu-principal" className={styles.backLink}>
-            <Icon name="back" />
-            Menú principal
-          </Link>
-
-          <button type="button" className={styles.primaryBtn} onClick={openForm}>
-            <Icon name="plus" />
-            Registrar copropietario
-          </button>
-        </header>
-
         <div className={styles.titleBlock}>
           <span className={styles.eyebrow}>Administración</span>
-          <h1>Copropietarios</h1>
+
+          <div className={styles.titleRow}>
+            <h1>Copropietarios</h1>
+            {registerButton}
+          </div>
+
           <p>
             {items.length} registrados · {activos} activos
           </p>
@@ -264,7 +256,6 @@ export default function CopropietariosPage() {
                     <th>Copropietario</th>
                     <th>CI</th>
                     <th>Departamento</th>
-                    <th>Participación</th>
                     <th>Teléfono</th>
                     <th>Registro</th>
                     <th>Estado</th>
@@ -284,7 +275,6 @@ export default function CopropietariosPage() {
                       </td>
                       <td data-label="CI">{item.ci}</td>
                       <td data-label="Departamento">{item.departamento}</td>
-                      <td data-label="Participación">{item.participacion ? `${item.participacion} %` : '—'}</td>
                       <td data-label="Teléfono">{item.telefono}</td>
                       <td data-label="Registro">{item.fecha}</td>
                       <td data-label="Estado">
@@ -326,13 +316,24 @@ export default function CopropietariosPage() {
             </div>
 
             <form onSubmit={handleSubmit} noValidate className={styles.form}>
-              <Field label="Nombre completo *" error={errors.nombre} full>
+              <Field label="Nombre completo *" error={errors.nombre}>
                 <input
                   type="text"
-                  placeholder="Ej. Carlos Mendoza Rojas"
+                  placeholder="Ej. Carlos"
                   value={form.nombre}
                   onChange={(e) => handleChange('nombre', e.target.value)}
                   className={errors.nombre ? styles.invalid : ''}
+                  autoComplete="off"
+                />
+              </Field>
+
+              <Field label="Apellido completo *" error={errors.apellido}>
+                <input
+                  type="text"
+                  placeholder="Ej. Mendoza Rojas"
+                  value={form.apellido}
+                  onChange={(e) => handleChange('apellido', e.target.value)}
+                  className={errors.apellido ? styles.invalid : ''}
                   autoComplete="off"
                 />
               </Field>
@@ -376,19 +377,6 @@ export default function CopropietariosPage() {
                 />
               </Field>
 
-              <Field label="Participación (%)" error={errors.participacion}>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  placeholder="Ej. 4.50"
-                  value={form.participacion}
-                  onChange={(e) => handleChange('participacion', e.target.value)}
-                  className={errors.participacion ? styles.invalid : ''}
-                />
-              </Field>
-
               <div className={styles.actions}>
                 <button type="button" className={styles.ghostBtn} onClick={() => setShowForm(false)}>
                   Cancelar
@@ -402,7 +390,7 @@ export default function CopropietariosPage() {
           </div>
         </div>
       )}
-    </div>
+    </AppShell>
   );
 }
 

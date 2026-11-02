@@ -81,9 +81,8 @@
 .container {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 1180px;
-  margin: 0 auto;
-  padding: 28px 32px 48px;
   box-sizing: border-box;
   animation: rise 0.8s var(--ease) both;
 }
@@ -93,7 +92,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
 }
 
@@ -179,7 +178,20 @@
 
 /* ---------- Título ---------- */
 .titleBlock {
-  margin: 28px 0 20px;
+  margin: 4px 0 18px;
+}
+
+/* Título y botón en la misma línea, centrados verticalmente */
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.titleRow h1 {
+  margin: 6px 0 0;
 }
 
 .eyebrow {
@@ -306,8 +318,32 @@
   color: var(--text-muted);
 }
 
+/* Tabla con desplazamiento interno y barra discreta */
 .tableWrap {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: max(260px, calc(100dvh - 300px));
+  margin: 0 -6px;
+  padding: 0 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+.tableWrap::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.tableWrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tableWrap::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+}
+
+.tableWrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
 }
 
 .table {
@@ -334,6 +370,13 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   vertical-align: middle;
   white-space: nowrap;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(15, 23, 42, 0.92);
 }
 
 .table tbody tr {
@@ -544,20 +587,12 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .container {
-    padding: 22px 20px 40px;
-  }
-
   .searchBox {
     width: 100%;
   }
 }
 
 @media (max-width: 640px) {
-  .container {
-    padding: 18px 14px 32px;
-  }
-
   .titleBlock h1 {
     font-size: 1.6rem;
   }
@@ -585,6 +620,14 @@
   .header .primaryBtn {
     width: auto;
     flex: 1 1 100%;
+  }
+
+  /* En celular la tabla crece con su contenido (tarjetas) */
+  .tableWrap {
+    max-height: none;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
   }
 
   /* Tabla convertida en tarjetas */
