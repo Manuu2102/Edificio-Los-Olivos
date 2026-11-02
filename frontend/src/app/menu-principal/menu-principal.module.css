@@ -1,5 +1,5 @@
 /* ==========================================================
-   MENÚ PRINCIPAL · Edificio Central — Glassmorphism
+   MENÚ PRINCIPAL · Edificio Los Olivos — Glassmorphism
    Comportamiento:
    - PC (≥1100px): barra lateral fija a la izquierda, se oculta
      y muestra con el botón de menú. El contenido cabe en una
@@ -221,6 +221,7 @@
 }
 
 .brandText h1 span {
+  display: block;
   background: linear-gradient(90deg, #60a5fa, #818cf8);
   -webkit-background-clip: text;
   background-clip: text;
