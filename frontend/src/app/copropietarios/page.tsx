@@ -1,10 +1,10 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import AppShell from '../_components/app-shell/AppShell';
 import styles from './copropietarios.module.css';
 
-type IconName = 'users' | 'plus' | 'search' | 'back' | 'close' | 'check';
+type IconName = 'users' | 'plus' | 'search' | 'back' | 'close' | 'check' | 'chevron';
 
 const ICON_PATHS: Record<IconName, string[]> = {
   users: [
@@ -18,6 +18,7 @@ const ICON_PATHS: Record<IconName, string[]> = {
   back: ['M19 12H5', 'M12 19l-7-7 7-7'],
   close: ['M6 6l12 12', 'M18 6L6 18'],
   check: ['M20 6L9 17l-5-5'],
+  chevron: ['M6 9l6 6 6-6'],
 };
 
 function Icon({ name, className }: { name: IconName; className?: string }) {
@@ -59,6 +60,11 @@ type FormState = {
   departamento: string;
 };
 
+// Departamentos disponibles del edificio: 1A, 1B, 2A, 2B, ... hasta el piso 6.
+const DEPARTAMENTOS = Array.from({ length: 6 }, (_, i) => i + 1).flatMap((piso) =>
+  ['A', 'B'].map((letra) => `${piso}${letra}`),
+);
+
 const EMPTY_FORM: FormState = {
   nombre: '',
   apellido: '',
@@ -76,7 +82,7 @@ const SEED: Copropietario[] = [
     ci: '5214786 LP',
     correo: 'carlos.mendoza@mail.com',
     telefono: '+591 711 22334',
-    departamento: 'Depto. 101',
+    departamento: '1A',
     fecha: '12/03/2025',
     estado: 'Activo',
   },
@@ -86,7 +92,7 @@ const SEED: Copropietario[] = [
     ci: '6638120 CB',
     correo: 'mfsoliz@mail.com',
     telefono: '+591 722 45678',
-    departamento: 'Depto. 204',
+    departamento: '2B',
     fecha: '28/07/2025',
     estado: 'Activo',
   },
@@ -96,7 +102,7 @@ const SEED: Copropietario[] = [
     ci: '4870321 SC',
     correo: 'javier.arce@mail.com',
     telefono: '+591 733 98765',
-    departamento: 'Depto. 305',
+    departamento: '3A',
     fecha: '15/01/2026',
     estado: 'Inactivo',
   },
@@ -122,7 +128,7 @@ function validate(form: FormState) {
   if (!form.nombre.trim()) errors.nombre = 'Ingresa el nombre.';
   if (!form.apellido.trim()) errors.apellido = 'Ingresa el apellido.';
   if (!form.ci.trim()) errors.ci = 'Ingresa la cédula de identidad.';
-  if (!form.departamento.trim()) errors.departamento = 'Ingresa el departamento.';
+  if (!form.departamento.trim()) errors.departamento = 'Selecciona el departamento.';
   if (!form.correo.trim()) {
     errors.correo = 'Ingresa el correo electrónico.';
   } else if (!/^\S+@\S+\.\S+$/.test(form.correo.trim())) {
@@ -349,12 +355,10 @@ export default function CopropietariosPage() {
               </Field>
 
               <Field label="Departamento *" error={errors.departamento}>
-                <input
-                  type="text"
-                  placeholder="Ej. Depto. 101"
+                <DepartamentoSelect
                   value={form.departamento}
-                  onChange={(e) => handleChange('departamento', e.target.value)}
-                  className={errors.departamento ? styles.invalid : ''}
+                  onChange={(v) => handleChange('departamento', v)}
+                  invalid={!!errors.departamento}
                 />
               </Field>
 
@@ -391,6 +395,76 @@ export default function CopropietariosPage() {
         </div>
       )}
     </AppShell>
+  );
+}
+
+// Lista desplegable de departamentos: muestra 5 a la vez y el resto se desliza dentro de la lista.
+function DepartamentoSelect({
+  value,
+  onChange,
+  invalid,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  invalid?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Cerrar al hacer clic fuera o con Escape (sin cerrar también el formulario)
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className={styles.dropdown} ref={ref}>
+      <button
+        type="button"
+        className={`${styles.dropdownBtn} ${invalid ? styles.invalid : ''}`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className={value ? '' : styles.dropdownPlaceholder}>
+          {value || 'Selecciona un departamento'}
+        </span>
+        <Icon name="chevron" />
+      </button>
+
+      {open && (
+        <ul className={styles.dropdownList} role="listbox">
+          {DEPARTAMENTOS.map((d) => (
+            <li key={d} role="option" aria-selected={d === value}>
+              <button
+                type="button"
+                className={`${styles.dropdownItem} ${d === value ? styles.dropdownItemActive : ''}`}
+                onClick={() => {
+                  onChange(d);
+                  setOpen(false);
+                }}
+              >
+                {d}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
