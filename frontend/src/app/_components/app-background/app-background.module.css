@@ -1,0 +1,59 @@
+/* ==========================================================
+   FONDO COMPARTIDO · Edificio Los Olivos
+   Tres imágenes con transición (fundido cruzado) en bucle infinito.
+   ========================================================== */
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: #0b1120;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation-name: bgFade;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: opacity;
+}
+
+/* Viñeta y capa oscura para dar profundidad y legibilidad */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top, rgba(15, 23, 42, 0.25), rgba(2, 6, 23, 0.9) 75%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.8));
+}
+
+/*
+ * Ciclo de 15 s (3 imágenes × 5 s). Cada imagen:
+ * aparece en 1 s (0%→6.67%), se mantiene 5 s (→33.33%) y se desvanece en 1 s (→40%).
+ * El desfase de 5 s hace que una imagen entre mientras la anterior sale.
+ */
+@keyframes bgFade {
+  0%   { opacity: 0; }
+  6.67%  { opacity: 1; }
+  33.33%  { opacity: 1; }
+  40%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    animation: none;
+    opacity: 0;
+  }
+
+  .slide:first-child {
+    opacity: 1;
+  }
+}

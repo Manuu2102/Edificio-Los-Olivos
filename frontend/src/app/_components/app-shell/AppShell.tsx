@@ -4,8 +4,11 @@ import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './app-shell.module.css';
+import AppBackground from '../app-background/AppBackground';
 
 const MOBILE_QUERY = '(max-width: 1099px)';
+const COMPACT_QUERY = '(min-width: 1100px) and (max-width: 1279px)';
+const COLLAPSED_KEY = 'sidebar-collapsed';
 const BUILDING_NAME = 'Edificio Los Olivos';
 const USER = { name: 'jack kevin', role: 'Administrador', initials: 'JK' };
 
@@ -15,6 +18,8 @@ type IconName =
   | 'building'
   | 'parking'
   | 'link'
+  | 'box'
+  | 'folder'
   | 'history'
   | 'briefcase'
   | 'wallet'
@@ -25,7 +30,9 @@ type IconName =
   | 'logout'
   | 'grid'
   | 'menu'
-  | 'close';
+  | 'close'
+  | 'chevronLeft'
+  | 'chevronRight';
 
 const ICON_PATHS: Record<IconName, string[]> = {
   users: [
@@ -44,6 +51,8 @@ const ICON_PATHS: Record<IconName, string[]> = {
     'M8 15h2',
   ],
   parking: ['M5 3h7a5 5 0 0 1 0 10H9v8H5z', 'M9 7h3a2 2 0 0 1 0 4H9'],
+  folder: ['M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'],
+  box: ['M21 8l-9-5-9 5v8l9 5 9-5z', 'M3.27 6.96L12 12.01l8.73-5.05', 'M12 22.08V12'],
   link: [
     'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71',
     'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71',
@@ -63,6 +72,8 @@ const ICON_PATHS: Record<IconName, string[]> = {
   grid: ['M3 3h7v7H3z', 'M14 3h7v7h-7z', 'M14 14h7v7h-7z', 'M3 14h7v7H3z'],
   menu: ['M4 6h16', 'M4 12h16', 'M4 18h16'],
   close: ['M6 6l12 12', 'M18 6L6 18'],
+  chevronLeft: ['M15 18l-6-6 6-6'],
+  chevronRight: ['M9 18l6-6-6-6'],
 };
 
 function Icon({ name, className }: { name: IconName; className?: string }) {
@@ -103,10 +114,10 @@ const SECTIONS: Section[] = [
       { label: 'Copropietarios', href: '/copropietarios', icon: 'users' },
       { label: 'Inquilinos', href: '/inquilinos', icon: 'home' },
       { label: 'Departamentos', href: '/departamentos', icon: 'building' },
-      { label: 'Parqueos y bauleras', href: '/parqueos', icon: 'parking' },
-      { label: 'Asociaciones', href: '/asociaciones', icon: 'link' },
-      { label: 'Historial de ocupantes', href: '/historial-ocupantes', icon: 'history' },
+      { label: 'Parqueos', href: '/parqueos', icon: 'parking' },
+      { label: 'Bauleras', href: '/bauleras', icon: 'box' },
       { label: 'Empleados', href: '/empleados', icon: 'briefcase' },
+      { label: 'Expedientes', href: '/expedientes', icon: 'folder' },
     ],
   },
   {
@@ -132,16 +143,18 @@ const SECTIONS: Section[] = [
 
 export default function AppShell({ children, actions }: { children: ReactNode; actions?: ReactNode }) {
   const pathname = usePathname();
-  // Escritorio: `collapsed` oculta/muestra la barra lateral.
+  // Escritorio: `collapsed` convierte la barra lateral en un riel de solo iconos.
   const [collapsed, setCollapsed] = useState(false);
   // Tablet/celular: `open` despliega la barra lateral como panel.
   const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [nombre, ...resto] = BUILDING_NAME.split(' ');
 
-  // Al achicar la ventana, la barra lateral se oculta automáticamente.
+  // En tablet/celular la barra lateral es un panel: se oculta al cambiar de tamaño.
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_QUERY);
     const onChange = () => {
+      setIsMobile(mq.matches);
       if (mq.matches) setOpen(false);
     };
     onChange();
@@ -149,18 +162,47 @@ export default function AppShell({ children, actions }: { children: ReactNode; a
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  const toggleMenu = () => {
-    if (window.matchMedia(MOBILE_QUERY).matches) {
-      setOpen((v) => !v);
-    } else {
-      setCollapsed((v) => !v);
+  // Cada página monta su propia barra lateral, así que la preferencia oculto/visible
+  // se guarda en el navegador para que no se reinicie al cambiar de pantalla.
+  useEffect(() => {
+    const mq = window.matchMedia(COMPACT_QUERY);
+    let saved: string | null = null;
+    try {
+      saved = window.localStorage.getItem(COLLAPSED_KEY);
+    } catch {
+      saved = null;
+    }
+    setCollapsed(saved !== null ? saved === '1' : mq.matches);
+
+    // En pantallas medianas (1100–1279 px) el riel de iconos se activa solo al achicar.
+    const onChange = () => {
+      if (mq.matches) setCollapsed(true);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  const handleSidebarToggle = () => {
+    if (isMobile) {
+      setOpen(false);
+      return;
+    }
+    const next = !collapsed;
+    setCollapsed(next);
+    try {
+      window.localStorage.setItem(COLLAPSED_KEY, next ? '1' : '0');
+    } catch {
+      // Si el navegador bloquea el almacenamiento, la preferencia dura solo mientras la página esté abierta.
     }
   };
 
   const closeDrawer = () => setOpen(false);
 
+  const railOpen = collapsed && !isMobile;
+
   return (
     <div className={styles.page}>
+      <AppBackground />
       {open && <div className={styles.backdrop} onClick={closeDrawer} aria-hidden="true" />}
 
       <aside
@@ -183,10 +225,11 @@ export default function AppShell({ children, actions }: { children: ReactNode; a
           <button
             type="button"
             className={styles.drawerClose}
-            aria-label="Cerrar menú"
-            onClick={closeDrawer}
+            aria-label={railOpen ? 'Mostrar barra lateral' : 'Ocultar barra lateral'}
+            title={railOpen ? 'Mostrar' : 'Ocultar'}
+            onClick={handleSidebarToggle}
           >
-            <Icon name="close" />
+            <Icon name={railOpen ? 'chevronRight' : 'chevronLeft'} />
           </button>
         </div>
 
@@ -252,8 +295,8 @@ export default function AppShell({ children, actions }: { children: ReactNode; a
             type="button"
             className={styles.menuToggle}
             aria-controls="sidebar"
-            aria-label="Mostrar u ocultar menú"
-            onClick={toggleMenu}
+            aria-label="Abrir menú"
+            onClick={() => setOpen(true)}
           >
             <Icon name="menu" />
           </button>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import AppShell from '../_components/app-shell/AppShell';
 import styles from './menu-principal.module.css';
 
-type IconName = 'users' | 'home' | 'building' | 'parking' | 'link' | 'history' | 'briefcase' | 'shield' | 'arrow';
+type IconName = 'users' | 'home' | 'building' | 'parking' | 'link' | 'history' | 'briefcase' | 'shield' | 'arrow' | 'box';
 
 const ICON_PATHS: Record<IconName, string[]> = {
   users: [
@@ -21,6 +21,7 @@ const ICON_PATHS: Record<IconName, string[]> = {
     'M8 15h2',
   ],
   parking: ['M5 3h7a5 5 0 0 1 0 10H9v8H5z', 'M9 7h3a2 2 0 0 1 0 4H9'],
+  box: ['M21 8l-9-5-9 5v8l9 5 9-5z', 'M3.27 6.96L12 12.01l8.73-5.05', 'M12 22.08V12'],
   link: [
     'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71',
     'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71',
@@ -69,8 +70,8 @@ const SECTIONS: Section[] = [
       { label: 'Copropietarios', description: 'Propietarios registrados', href: '/copropietarios', icon: 'users' },
       { label: 'Inquilinos', description: 'Residentes y contratos', href: '/inquilinos', icon: 'home' },
       { label: 'Departamentos', description: 'Unidades del edificio', href: '/departamentos', icon: 'building' },
-      { label: 'Parqueos y bauleras', description: 'Espacios asignados', href: '/parqueos', icon: 'parking' },
-      { label: 'Asociaciones', description: 'Vínculos y acuerdos', href: '/asociaciones', icon: 'link' },
+      { label: 'Parqueos', description: 'Espacios asignados', href: '/parqueos', icon: 'parking' },
+      { label: 'Bauleras', description: 'Espacios de almacenamiento', href: '/bauleras', icon: 'box' },
       { label: 'Historial de ocupantes', description: 'Movimientos de ocupación', href: '/historial-ocupantes', icon: 'history' },
       { label: 'Empleados', description: 'Personal y sueldos', href: '/empleados', icon: 'briefcase' },
     ],

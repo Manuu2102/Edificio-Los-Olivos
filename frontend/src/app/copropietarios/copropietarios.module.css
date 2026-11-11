@@ -24,23 +24,6 @@
   position: relative;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-main);
-  background-color: #0b1120;
-  background-image: url('/2.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-.page::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at top, rgba(15, 23, 42, 0.25), rgba(2, 6, 23, 0.9) 75%),
-    linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.8));
 }
 
 .page::after {

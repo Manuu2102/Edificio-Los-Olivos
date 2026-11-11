@@ -31,23 +31,6 @@
   box-sizing: border-box;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-main);
-  background-color: #0b1120; /* fallback si la imagen no carga */
-  background-image: url('/2.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Capa de color + viñeta para dar profundidad */
-.container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at top, rgba(15, 23, 42, 0.25), rgba(2, 6, 23, 0.85) 75%),
-    linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.75));
 }
 
 /* Orbes de luz animados detrás del cristal */

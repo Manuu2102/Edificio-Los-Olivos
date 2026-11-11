@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // 1. Importamos useRouter
 import styles from './login.module.css';
+import AppBackground from '../_components/app-background/AppBackground';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -21,6 +22,7 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container}>
+      <AppBackground />
       
       {/* Header Superior */}
       <div className={styles.header}>

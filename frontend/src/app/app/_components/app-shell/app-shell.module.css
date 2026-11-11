@@ -1,0 +1,552 @@
+/* ==========================================================
+   APP SHELL · Edificio Los Olivos — Glassmorphism
+   Barra lateral y estructura compartida por todas las pantallas.
+   - PC (≥1100px): barra lateral fija, se oculta con el botón.
+   - Tablet y celular (<1100px): panel lateral deslizante.
+   ========================================================== */
+
+:root {
+  --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0.09) 100%);
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --text-main: #f8fafc;
+  --text-soft: #cbd5e1;
+  --text-muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-2: #6366f1;
+  --accent-glow: rgba(59, 130, 246, 0.45);
+  --radius-input: 12px;
+  --sidebar-width: 272px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Página / fondo ---------- */
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  display: flex;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-main);
+}
+
+.page::after {
+  content: '';
+  position: fixed;
+  width: 70vmax;
+  height: 70vmax;
+  top: 40%;
+  left: 60%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.4), transparent 45%),
+    radial-gradient(circle at 70% 65%, rgba(99, 102, 241, 0.35), transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.2), transparent 55%);
+  filter: blur(70px);
+  transform: translate(-50%, -50%);
+  animation: drift 20s var(--ease) infinite alternate;
+  opacity: 0.9;
+}
+
+@keyframes drift {
+  from { transform: translate(-55%, -52%) rotate(0deg); }
+  to   { transform: translate(-45%, -48%) rotate(25deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ---------- Contenido (a la derecha de la barra lateral) ---------- */
+.content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+  padding: 28px 36px 24px;
+  box-sizing: border-box;
+  animation: rise 0.9s var(--ease) both;
+  animation-delay: 0.1s;
+}
+
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+/* Acciones de la página (ej. botón principal), alineadas a la derecha de la misma fila */
+.topBarActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.menuToggle {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.menuToggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.menuToggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(96, 165, 250, 0.55);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 22px -6px var(--accent-glow);
+}
+
+.menuToggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35);
+}
+
+/* Título del edificio junto al botón: solo en móvil/tablet */
+.topBarTitle {
+  display: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.topBarTitle span {
+  background: linear-gradient(90deg, #60a5fa, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.drawerClose {
+  display: none;
+}
+
+.backdrop {
+  display: none;
+}
+
+/* ---------- Barra lateral ---------- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  flex: 0 0 var(--sidebar-width);
+  width: var(--sidebar-width);
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px 16px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(2, 6, 23, 0.82));
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border-right: 1px solid var(--glass-border);
+  box-shadow:
+    30px 0 60px -30px rgba(0, 0, 0, 0.6),
+    inset -1px 0 0 rgba(255, 255, 255, 0.04);
+  animation: slideIn 0.8s var(--ease) both;
+}
+
+.sidebarBrand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logoChip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 10px 30px -10px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 var(--glass-highlight),
+    0 0 30px -8px var(--accent-glow);
+}
+
+.logoIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+}
+
+.brandText h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.brandText h1 span {
+  display: block;
+  background: linear-gradient(90deg, #60a5fa, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brandText p {
+  margin: 4px 0 0;
+  font-size: 0.62rem;
+  letter-spacing: 2.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-right: -4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+.navSection {
+  margin-bottom: 10px;
+}
+
+.navTitle {
+  margin: 0 0 4px;
+  padding: 0 12px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin-bottom: 2px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--text-soft);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease);
+}
+
+.navIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  transition: color 0.25s ease, filter 0.25s ease;
+}
+
+.navLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.navItem:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(3px);
+}
+
+.navItem:hover .navIcon {
+  color: #93c5fd;
+}
+
+.navItem:focus-visible {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.7);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.navItemActive,
+.navItemActive:hover {
+  color: #fff;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.32), rgba(99, 102, 241, 0.22));
+  border-color: rgba(147, 197, 253, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 22px -8px var(--accent-glow);
+  transform: none;
+}
+
+.navItemActive .navIcon {
+  color: #bfdbfe;
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.7));
+}
+
+.activeDot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #60a5fa;
+  box-shadow: 0 0 10px 2px rgba(96, 165, 250, 0.6);
+}
+
+.sidebarFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.userChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  min-width: 0;
+}
+
+.userInfo {
+  min-width: 0;
+}
+
+.userInfo strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userInfo span {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 0 16px -4px var(--accent-glow);
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-input);
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.logoutBtn svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.logoutBtn:hover {
+  color: #fff;
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+/* =====================================================
+   PC · ≥1100px → barra lateral que se puede ocultar
+   ===================================================== */
+@media (min-width: 1100px) {
+  .sidebar.collapsed {
+    display: none;
+  }
+}
+
+@media (min-width: 1600px) {
+  .content {
+    padding: 36px 56px 28px;
+  }
+}
+
+/* =====================================================
+   TABLET Y CELULAR · <1100px → panel lateral deslizante
+   ===================================================== */
+@media (max-width: 1099px) {
+  .topBarTitle {
+    display: block;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: fadeIn 0.3s ease both;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 7;
+    flex: none;
+    width: min(300px, 86vw);
+    height: 100dvh;
+    padding: 20px 16px 16px;
+    overflow-y: auto;
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease), visibility 0.35s;
+    animation: none;
+    box-shadow: 20px 0 60px -20px rgba(0, 0, 0, 0.7);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .drawerClose {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-soft);
+    cursor: pointer;
+  }
+
+  .drawerClose svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .drawerClose:hover {
+    color: #fff;
+    border-color: rgba(96, 165, 250, 0.55);
+  }
+
+  .sidebarBrand {
+    padding: 4px 4px 16px;
+    margin-bottom: 12px;
+  }
+
+  .navItem {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .navItem:hover {
+    transform: none;
+  }
+
+  .logoutBtn {
+    padding: 12px 14px;
+  }
+
+  .content {
+    padding: 24px 20px 32px;
+  }
+
+  .topBar {
+    margin-bottom: 24px;
+  }
+}
+
+/* Celular */
+@media (max-width: 639px) {
+  .content {
+    padding: 20px 16px 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page::after,
+  .sidebar,
+  .content,
+  .backdrop {
+    animation: none;
+    transition: none;
+  }
+}
