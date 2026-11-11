@@ -227,6 +227,34 @@ export default function CopropietariosPage() {
           </p>
         </div>
 
+        <div className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>
+              <Icon name="users" />
+            </span>
+            <div>
+              <strong>{items.length}</strong>
+              <small>Copropietarios registrados</small>
+            </div>
+          </div>
+
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>
+              <Icon name="check" />
+            </span>
+            <div className={styles.statSplit}>
+              <div>
+                <strong>{activos}</strong>
+                <small>Activos</small>
+              </div>
+              <div>
+                <strong>{items.length - activos}</strong>
+                <small>Inactivos</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {lastRegistered && (
           <div className={styles.banner} role="status">
             <Icon name="check" />

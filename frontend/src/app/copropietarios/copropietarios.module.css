@@ -805,3 +805,74 @@
   color: #fff;
   font-weight: 600;
 }
+
+/* ---------- Tarjetas de resumen ---------- */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 20px 40px -18px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
+.statIcon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(99, 102, 241, 0.25));
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  color: #bfdbfe;
+}
+
+.statIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.statCard strong {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-main);
+}
+
+.statCard small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.statSplit {
+  display: flex;
+  gap: 28px;
+}
+
+.statSplit > div {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+}
