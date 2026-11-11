@@ -1,16 +1,23 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import AppShell from '../app-shell/AppShell';
 import styles from './registro.module.css';
 
-type IconName = 'plus' | 'search' | 'close' | 'check';
+type IconName = 'plus' | 'search' | 'close' | 'check' | 'chevron' | 'users';
 
 const ICON_PATHS: Record<IconName, string[]> = {
   plus: ['M12 5v14', 'M5 12h14'],
   search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z', 'M21 21l-4.35-4.35'],
   close: ['M6 6l12 12', 'M18 6L6 18'],
   check: ['M20 6L9 17l-5-5'],
+  chevron: ['M6 9l6 6 6-6'],
+  users: [
+    'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2',
+    'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
+    'M22 21v-2a4 4 0 0 0-3-3.87',
+    'M16 3.13a4 4 0 0 1 0 7.75',
+  ],
 };
 
 function Icon({ name, className }: { name: IconName; className?: string }) {
@@ -39,7 +46,9 @@ export type Campo = {
   key: string;
   label: string;
   placeholder: string;
-  type?: 'text' | 'email' | 'tel';
+  type?: 'text' | 'email' | 'tel' | 'select';
+  // Opciones cuando type es 'select'
+  opciones?: string[];
   required?: boolean;
 };
 
@@ -56,6 +65,8 @@ export type RegistroConfig = {
   columnas: Columna[];
   // Dato secundario que se muestra debajo del nombre principal (opcional).
   subKey?: string;
+  // Muestra las tarjetas de total y de activos/inactivos encima del historial
+  resumen?: boolean;
   registros: Registro[];
 };
 
@@ -79,7 +90,7 @@ function validate(form: Record<string, string>, campos: Campo[]) {
   for (const c of campos) {
     const v = (form[c.key] ?? '').trim();
     if (c.required && !v) {
-      errors[c.key] = 'Este campo es obligatorio.';
+      errors[c.key] = c.type === 'select' ? 'Selecciona una opción.' : 'Este campo es obligatorio.';
     } else if (c.type === 'email' && v && !/^\S+@\S+\.\S+$/.test(v)) {
       errors[c.key] = 'El correo no tiene un formato válido.';
     }
@@ -124,6 +135,7 @@ export default function RegistroPage({ config }: { config: RegistroConfig }) {
   }, [items, query]);
 
   const activos = items.filter((i) => i.estado === 'Activo').length;
+  const inactivos = items.length - activos;
 
   const openForm = () => {
     setForm(emptyForm);
@@ -178,6 +190,38 @@ export default function RegistroPage({ config }: { config: RegistroConfig }) {
             {items.length} registrados · {activos} activos
           </p>
         </div>
+
+        {config.resumen && (
+          <div className={styles.statsRow}>
+            <div className={styles.statCard}>
+              <span className={styles.statIcon}>
+                <Icon name="users" />
+              </span>
+              <div>
+                <strong>{items.length}</strong>
+                <small>{titulo} registrados</small>
+              </div>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statIcon}>
+                <Icon name="check" />
+              </span>
+              <div>
+                <strong>{activos}</strong>
+                <small>Activos</small>
+              </div>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statIcon}>
+                <Icon name="close" />
+              </span>
+              <div>
+                <strong>{inactivos}</strong>
+                <small>Inactivos</small>
+              </div>
+            </div>
+          </div>
+        )}
 
         {lastRegistered && (
           <div className={styles.banner} role="status">
@@ -278,14 +322,24 @@ export default function RegistroPage({ config }: { config: RegistroConfig }) {
             <form onSubmit={handleSubmit} noValidate className={styles.form}>
               {campos.map((c) => (
                 <Field key={c.key} label={`${c.label}${c.required ? ' *' : ''}`} error={errors[c.key]}>
-                  <input
-                    type={c.type ?? 'text'}
-                    placeholder={c.placeholder}
-                    value={form[c.key] ?? ''}
-                    onChange={(e) => handleChange(c.key, e.target.value)}
-                    className={errors[c.key] ? styles.invalid : ''}
-                    autoComplete="off"
-                  />
+                  {c.type === 'select' ? (
+                    <DropdownSelect
+                      value={form[c.key] ?? ''}
+                      opciones={c.opciones ?? []}
+                      placeholder={c.placeholder}
+                      onChange={(v) => handleChange(c.key, v)}
+                      invalid={!!errors[c.key]}
+                    />
+                  ) : (
+                    <input
+                      type={c.type ?? 'text'}
+                      placeholder={c.placeholder}
+                      value={form[c.key] ?? ''}
+                      onChange={(e) => handleChange(c.key, e.target.value)}
+                      className={errors[c.key] ? styles.invalid : ''}
+                      autoComplete="off"
+                    />
+                  )}
                 </Field>
               ))}
 
@@ -303,6 +357,78 @@ export default function RegistroPage({ config }: { config: RegistroConfig }) {
         </div>
       )}
     </AppShell>
+  );
+}
+
+// Lista desplegable: muestra 4 opciones a la vez y el resto se desliza dentro.
+function DropdownSelect({
+  value,
+  opciones,
+  placeholder,
+  onChange,
+  invalid,
+}: {
+  value: string;
+  opciones: string[];
+  placeholder: string;
+  onChange: (v: string) => void;
+  invalid?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Cerrar al hacer clic fuera o con Escape (sin cerrar también el formulario)
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className={styles.dropdown} ref={ref}>
+      <button
+        type="button"
+        className={`${styles.dropdownBtn} ${invalid ? styles.invalid : ''}`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className={value ? '' : styles.dropdownPlaceholder}>{value || placeholder}</span>
+        <Icon name="chevron" />
+      </button>
+
+      {open && (
+        <ul className={styles.dropdownList} role="listbox">
+          {opciones.map((o) => (
+            <li key={o} role="option" aria-selected={o === value}>
+              <button
+                type="button"
+                className={`${styles.dropdownItem} ${o === value ? styles.dropdownItemActive : ''}`}
+                onClick={() => {
+                  onChange(o);
+                  setOpen(false);
+                }}
+              >
+                {o}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

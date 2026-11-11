@@ -523,7 +523,8 @@
   color: var(--text-soft);
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   box-sizing: border-box;
   padding: 11px 14px;
@@ -540,17 +541,30 @@
   color: #64748b;
 }
 
-.field input:hover {
+.field input:hover,
+.field select:hover {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   border-color: rgba(96, 165, 250, 0.9);
   background: rgba(15, 23, 42, 0.55);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25), 0 0 24px -4px var(--accent-glow);
 }
 
-.field input.invalid {
+.field select {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.field select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.field input.invalid,
+.field select.invalid {
   border-color: rgba(248, 113, 113, 0.8);
 }
 
@@ -680,4 +694,191 @@
     animation: none;
     transition: none;
   }
+}
+
+/* ---------- Lista desplegable de departamentos ---------- */
+.dropdown {
+  position: relative;
+}
+
+.dropdownBtn {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-input);
+  color: var(--text-main);
+  font-size: 0.92rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dropdownBtn:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.dropdownBtn[aria-expanded='true'] {
+  border-color: rgba(96, 165, 250, 0.9);
+  background: rgba(15, 23, 42, 0.55);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25), 0 0 24px -4px var(--accent-glow);
+}
+
+.dropdownBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35);
+}
+
+.dropdownBtn.invalid {
+  border-color: rgba(248, 113, 113, 0.8);
+}
+
+.dropdownBtn svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  transition: transform 0.25s var(--ease);
+}
+
+.dropdownBtn[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.dropdownPlaceholder {
+  color: #64748b;
+}
+
+/* Muestra 4 departamentos; el resto se desliza dentro de la lista */
+.dropdownList {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 154px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 var(--glass-highlight);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+}
+
+.dropdownList li {
+  margin-bottom: 2px;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dropdownItemActive,
+.dropdownItemActive:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.32), rgba(99, 102, 241, 0.22));
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---------- Tarjetas de resumen ---------- */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 20px 40px -18px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
+.statIcon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(99, 102, 241, 0.25));
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  color: #bfdbfe;
+}
+
+.statIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.statCard strong {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-main);
+}
+
+.statCard small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.statSplit {
+  display: flex;
+  gap: 28px;
+}
+
+.statSplit > div {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Estado de error de cualquier campo (input, select o lista desplegable) */
+.field .invalid,
+.field .invalid:hover {
+  border-color: rgba(248, 113, 113, 0.8);
 }

@@ -809,7 +809,7 @@
 /* ---------- Tarjetas de resumen ---------- */
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 20px;
 }
@@ -875,4 +875,10 @@
   .statsRow {
     grid-template-columns: 1fr;
   }
+}
+
+/* Estado de error de cualquier campo (input, select o lista desplegable) */
+.field .invalid,
+.field .invalid:hover {
+  border-color: rgba(248, 113, 113, 0.8);
 }
