@@ -16,6 +16,7 @@ const CONFIG: RegistroConfig = {
     { key: 'piso', label: 'Piso' },
     { key: 'tipo', label: 'Tipo' },
   ],
+  resumen: true,
   registros: [
     { id: '1', numero: 'Depto. 101', piso: '1', tipo: '2 dormitorios', fecha: '12/03/2025', estado: 'Activo' },
     { id: '2', numero: 'Depto. 204', piso: '2', tipo: '3 dormitorios', fecha: '28/07/2025', estado: 'Activo' },
