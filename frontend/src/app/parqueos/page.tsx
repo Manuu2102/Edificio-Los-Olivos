@@ -10,10 +10,12 @@ const RESPONSABLES = [
 ];
 
 const SEED: Registro[] = [
-    { id: '1', numero: 'P-12', departamento: 'Depto. 101', responsable: 'Carlos Mendoza Rojas (Copropietario)', fecha: '12/03/2025', estado: 'Activo' },
-    { id: '2', numero: 'P-07', departamento: 'Depto. 204', responsable: 'María Fernanda Soliz (Copropietario)', fecha: '28/07/2025', estado: 'Activo' },
-    { id: '3', numero: 'P-21', departamento: 'Depto. 305', responsable: 'Javier Arce Quispe (Copropietario)', fecha: '15/01/2026', estado: 'Inactivo' },
+    { id: '1', numero: 'P-12', departamento: '1A', responsable: 'Carlos Mendoza Rojas (Copropietario)', fecha: '12/03/2025', estado: 'Activo' },
+    { id: '2', numero: 'P-07', departamento: '2B', responsable: 'María Fernanda Soliz (Copropietario)', fecha: '28/07/2025', estado: 'Activo' },
+    { id: '3', numero: 'P-21', departamento: '3A', responsable: 'Javier Arce Quispe (Copropietario)', fecha: '15/01/2026', estado: 'Inactivo' },
 ];
+
+const DEPARTAMENTOS = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B'];
 
 const CONFIG: RegistroConfig = {
   eyebrow: 'Administración',
@@ -23,7 +25,14 @@ const CONFIG: RegistroConfig = {
   descripcionHistorial: 'Todos los parqueos registrados en el edificio',
   campos: [
     { key: 'numero', label: 'Número de parqueo', placeholder: 'Ej. P-12', required: true },
-    { key: 'departamento', label: 'Departamento asignado', placeholder: 'Ej. Depto. 101', required: true },
+    {
+      key: 'departamento',
+      label: 'Departamento asignado',
+      placeholder: 'Selecciona un departamento',
+      type: 'select',
+      opciones: DEPARTAMENTOS,
+      required: true,
+    },
     {
       key: 'responsable',
       label: 'Propietario o inquilino responsable',

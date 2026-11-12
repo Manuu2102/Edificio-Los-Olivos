@@ -879,3 +879,20 @@
 .field .invalid:hover {
   border-color: rgba(248, 113, 113, 0.8);
 }
+
+/* ---------- Historial: no sobrepasa la barra lateral; la tabla se desliza por dentro ---------- */
+@media (min-width: 1100px) {
+  .historyCard {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 342px);
+    min-height: 320px;
+  }
+
+  .tableWrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+  }
+}
