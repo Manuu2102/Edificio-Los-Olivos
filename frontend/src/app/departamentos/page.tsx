@@ -1,6 +1,7 @@
 import RegistroPage, { type RegistroConfig } from '../_components/registro/RegistroPage';
 
 const CONFIG: RegistroConfig = {
+  clave: 'departamentos',
   eyebrow: 'Administración',
   titulo: 'Departamentos',
   entidad: 'departamento',
@@ -17,11 +18,6 @@ const CONFIG: RegistroConfig = {
     { key: 'tipo', label: 'Tipo' },
   ],
   resumen: true,
-  registros: [
-    { id: '1', numero: 'Depto. 101', piso: '1', tipo: '2 dormitorios', fecha: '12/03/2025', estado: 'Activo' },
-    { id: '2', numero: 'Depto. 204', piso: '2', tipo: '3 dormitorios', fecha: '28/07/2025', estado: 'Activo' },
-    { id: '3', numero: 'Depto. 305', piso: '3', tipo: 'Monoambiente', fecha: '15/01/2026', estado: 'Inactivo' },
-  ],
 };
 
 export default function DepartamentosPage() {

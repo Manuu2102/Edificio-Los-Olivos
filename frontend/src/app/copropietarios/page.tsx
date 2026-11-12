@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import AppShell from '../_components/app-shell/AppShell';
 import styles from './copropietarios.module.css';
+import { addRecord, useRecords } from '../_lib/registros';
 
 type IconName = 'users' | 'plus' | 'search' | 'back' | 'close' | 'check' | 'chevron';
 
@@ -41,7 +42,7 @@ function Icon({ name, className }: { name: IconName; className?: string }) {
 }
 
 type Copropietario = {
-  id: number;
+  id: string;
   nombre: string;
   ci: string;
   correo: string;
@@ -74,40 +75,6 @@ const EMPTY_FORM: FormState = {
   departamento: '',
 };
 
-// Datos de ejemplo. Reemplázalos por los datos de tu API cuando la tengas.
-const SEED: Copropietario[] = [
-  {
-    id: 1,
-    nombre: 'Carlos Mendoza Rojas',
-    ci: '5214786 LP',
-    correo: 'carlos.mendoza@mail.com',
-    telefono: '+591 711 22334',
-    departamento: '1A',
-    fecha: '12/03/2025',
-    estado: 'Activo',
-  },
-  {
-    id: 2,
-    nombre: 'María Fernanda Soliz',
-    ci: '6638120 CB',
-    correo: 'mfsoliz@mail.com',
-    telefono: '+591 722 45678',
-    departamento: '2B',
-    fecha: '28/07/2025',
-    estado: 'Activo',
-  },
-  {
-    id: 3,
-    nombre: 'Javier Arce Quispe',
-    ci: '4870321 SC',
-    correo: 'javier.arce@mail.com',
-    telefono: '+591 733 98765',
-    departamento: '3A',
-    fecha: '15/01/2026',
-    estado: 'Inactivo',
-  },
-];
-
 function initialsOf(name: string) {
   return name
     .split(' ')
@@ -138,7 +105,7 @@ function validate(form: FormState) {
 }
 
 export default function CopropietariosPage() {
-  const [items, setItems] = useState<Copropietario[]>(SEED);
+  const items = useRecords('copropietarios') as Copropietario[];
   const [query, setQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -188,7 +155,7 @@ export default function CopropietariosPage() {
     const nombreCompleto = `${form.nombre.trim()} ${form.apellido.trim()}`;
 
     const nuevo: Copropietario = {
-      id: Date.now(),
+      id: String(Date.now()),
       nombre: nombreCompleto,
       ci: form.ci.trim(),
       correo: form.correo.trim(),
@@ -198,7 +165,7 @@ export default function CopropietariosPage() {
       estado: 'Activo',
     };
 
-    setItems((prev) => [nuevo, ...prev]);
+    addRecord('copropietarios', nuevo);
     setLastRegistered(nuevo.nombre);
     setShowForm(false);
     setForm(EMPTY_FORM);
