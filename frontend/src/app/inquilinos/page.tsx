@@ -1,10 +1,16 @@
-import RegistroPage, { type RegistroConfig } from '../_components/registro/RegistroPage';
+import RegistroPage, { type Registro, type RegistroConfig } from '../_components/registro/RegistroPage';
 
 // Departamentos disponibles en el edificio: 1A, 1B, 2A, 2B, ... hasta el piso 6.
 const DEPARTAMENTOS = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B'];
 
+const SEED: Registro[] = [
+    { id: '1', nombre: 'Lucía Paredes Gutiérrez', ci: '6125478 LP', departamento: '1B', telefono: '+591 744 11223', correo: 'lucia.paredes@mail.com', fecha: '05/02/2025', estado: 'Activo' },
+    { id: '2', nombre: 'Diego Romero Villca', ci: '5873316 CB', departamento: '3A', telefono: '+591 755 67890', correo: 'diego.romero@mail.com', fecha: '19/09/2025', estado: 'Activo' },
+    { id: '3', nombre: 'Patricia Ríos Aguilar', ci: '4590217 SC', departamento: '2A', telefono: '—', correo: 'pat.rios@mail.com', fecha: '03/04/2026', estado: 'Inactivo' },
+];
+
 const CONFIG: RegistroConfig = {
-  clave: 'inquilinos',
+  registros: SEED,
   eyebrow: 'Administración',
   titulo: 'Inquilinos',
   entidad: 'inquilino',

@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import AppShell from '../app-shell/AppShell';
 import styles from './registro.module.css';
-import { addRecord, type Entidad, type Registro, useRecords } from '../../_lib/registros';
+export type Registro = Record<string, string>;
 
 type IconName = 'plus' | 'search' | 'close' | 'check' | 'chevron' | 'users';
 
@@ -65,8 +65,8 @@ export type RegistroConfig = {
   subKey?: string;
   // Muestra las tarjetas de total y de activos/inactivos encima del historial
   resumen?: boolean;
-  // Clave de la colección en el almacén compartido (ver _lib/registros.ts)
-  clave: Entidad;
+  // Datos de prueba iniciales de la pantalla
+  registros: Registro[];
 };
 
 function initialsOf(text: string) {
@@ -106,7 +106,7 @@ export default function RegistroPage({ config }: { config: RegistroConfig }) {
     [campos],
   );
 
-  const items = useRecords(config.clave);
+  const [items, setItems] = useState<Registro[]>(config.registros);
   const [query, setQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Record<string, string>>(emptyForm);
@@ -164,7 +164,7 @@ export default function RegistroPage({ config }: { config: RegistroConfig }) {
       nuevo.nombre = `${form.nombre.trim()} ${form.apellido.trim()}`;
     }
 
-    addRecord(config.clave, nuevo);
+    setItems((prev) => [nuevo, ...prev]);
     setLastRegistered(nuevo[principal]);
     setShowForm(false);
     setForm(emptyForm);

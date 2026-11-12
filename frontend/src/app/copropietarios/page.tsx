@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import AppShell from '../_components/app-shell/AppShell';
 import styles from './copropietarios.module.css';
-import { addRecord, useRecords } from '../_lib/registros';
 
 type IconName = 'users' | 'plus' | 'search' | 'back' | 'close' | 'check' | 'chevron';
 
@@ -104,8 +103,41 @@ function validate(form: FormState) {
   return errors;
 }
 
+const SEED: Copropietario[] = [
+  {
+    id: '1',
+    nombre: 'Carlos Mendoza Rojas',
+    ci: '5214786 LP',
+    correo: 'carlos.mendoza@mail.com',
+    telefono: '+591 711 22334',
+    departamento: '1A',
+    fecha: '12/03/2025',
+    estado: 'Activo',
+  },
+  {
+    id: '2',
+    nombre: 'María Fernanda Soliz',
+    ci: '6638120 CB',
+    correo: 'mfsoliz@mail.com',
+    telefono: '+591 722 45678',
+    departamento: '2B',
+    fecha: '28/07/2025',
+    estado: 'Activo',
+  },
+  {
+    id: '3',
+    nombre: 'Javier Arce Quispe',
+    ci: '4870321 SC',
+    correo: 'javier.arce@mail.com',
+    telefono: '+591 733 98765',
+    departamento: '3A',
+    fecha: '15/01/2026',
+    estado: 'Inactivo',
+  },
+];
+
 export default function CopropietariosPage() {
-  const items = useRecords('copropietarios') as Copropietario[];
+  const [items, setItems] = useState<Copropietario[]>(SEED);
   const [query, setQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -165,7 +197,7 @@ export default function CopropietariosPage() {
       estado: 'Activo',
     };
 
-    addRecord('copropietarios', nuevo);
+    setItems((prev) => [nuevo, ...prev]);
     setLastRegistered(nuevo.nombre);
     setShowForm(false);
     setForm(EMPTY_FORM);

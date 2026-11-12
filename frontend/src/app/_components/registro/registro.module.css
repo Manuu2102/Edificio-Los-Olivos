@@ -754,13 +754,10 @@
   color: #64748b;
 }
 
-/* Muestra 4 departamentos; el resto se desliza dentro de la lista */
+/* La lista empuja el contenido del formulario hacia abajo; muestra 4 opciones y el resto se desliza */
 .dropdownList {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  z-index: 20;
+  position: relative;
+  margin-top: 6px;
   max-height: 154px;
   overflow-y: auto;
   margin: 0;
