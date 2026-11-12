@@ -18,6 +18,7 @@ const CONFIG: RegistroConfig = {
     { key: 'departamento', label: 'Departamento' },
     { key: 'responsable', label: 'Responsable' },
   ],
+  resumen: true,
   registros: [
     { id: '1', numero: 'P-12', ubicacion: 'Subsuelo 1', departamento: 'Depto. 101', responsable: 'Carlos Mendoza Rojas', fecha: '12/03/2025', estado: 'Activo' },
     { id: '2', numero: 'P-07', ubicacion: 'Subsuelo 1', departamento: 'Depto. 204', responsable: 'María Fernanda Soliz', fecha: '28/07/2025', estado: 'Activo' },
